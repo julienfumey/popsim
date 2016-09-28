@@ -41,6 +41,10 @@ Locus* evolve(Locus* pop, Param* P, gsl_rng* r){
 	//ProgressBar
 	loadBar(0, P->tot_gen, 100, 80); 
 	
+	FILE* f = fopen("freq_gen_0", "w");
+	exportPop(pop, f);
+	fclose(f);
+
 	for(i = 1; i <= P->tot_gen; i++){
 		printf("%ld\n", i);
 		newFreq(pop, P, i, 0, r);
@@ -61,14 +65,14 @@ Locus* evolve(Locus* pop, Param* P, gsl_rng* r){
 		}	
 
 
-/*		if(i == 500 || i == 1500 || i == 3000 || i == 5000 || (i > 5000 && i%10000 == 0)){
+		if(i == 500 || i == 1500 || i == 3000 || i == 5000 || (i > 5000 && i%10000 == 0)){
 			char filename[50];
 			sprintf(filename, "freq_gen_%ld", i);
 			FILE* f = fopen(filename, "w");
 			exportPop(pop, f);
 			fclose(f);
 		}
-*/
+
 		
 	}
 	
@@ -166,7 +170,7 @@ void newFreq(Locus* pop, Param* P, long gen, int lab, gsl_rng* r){
  * \Param popSize Population size
  * \returns new frequency
 */
-inline double freqAllele(double freq, long popSize, gsl_rng* r){
+/*inline double freqAllele(double freq, long popSize, gsl_rng* r){
 	if(freq == 0 || freq == 1){
 		return freq;
 	}
@@ -181,6 +185,10 @@ inline double freqAllele(double freq, long popSize, gsl_rng* r){
 	}
 
 	return((double)nbZeros/(2*popSize));
+}*/
+
+inline double freqAllele(double freq, long popSize, gsl_rng* r){
+	return((double) gsl_ran_binomial(r, freq, 2*popSize)/(2*popSize));
 }
 
 
