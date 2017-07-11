@@ -37,10 +37,10 @@ Locus* evolve(Locus* pop, Param* P, gsl_rng* r){
 
 	addHeaderOutFile(outfile);
 	addHeaderOutFile(outfileLab);
-	
+
 	//ProgressBar
-	loadBar(0, P->tot_gen, 100, 80); 
-	
+//	loadBar(0, P->tot_gen, 100, 80);
+
 	FILE* f = fopen("freq_gen_0", "w");
 	exportPop(pop, f);
 	fclose(f);
@@ -55,14 +55,14 @@ Locus* evolve(Locus* pop, Param* P, gsl_rng* r){
 		}
 
 		pop = deleteNonSnp(pop, P);
-	
-		loadBar(i, P->tot_gen, 100, 80); 
+
+//		loadBar(i, P->tot_gen, 100, 80);
 		if((i-1)%10 == 0){
 			exportStats(outfile, i, pop, P, r);
 			if(i >= (P->init_gen + P->elabra_gen)){
 				evolveLab(outfileLab, pop, P, i, r);
 			}
-		}	
+		}
 
 
 		if(i == 500 || i == 1500 || i == 3000 || i == 5000 || (i > 5000 && i%10000 == 0)){
@@ -73,9 +73,9 @@ Locus* evolve(Locus* pop, Param* P, gsl_rng* r){
 			fclose(f);
 		}
 
-		
+
 	}
-	
+
 	fclose(outfile);
 	fclose(outfileLab);
 	return pop;
@@ -95,11 +95,11 @@ void evolveLab(FILE* f, Locus* pop, Param* P, long i, gsl_rng* r){
 
 	int j;
 	for(j = 1; j <= nbGeneration; j++){
-		newFreq(pop2, P, i, 1, r);	
+		newFreq(pop2, P, i, 1, r);
 	}
 
 	exportStats(f, i, pop2, P, r);
-	
+
 	if(i == P->exportLocusPopGene && P->exportLocusPop == 1){
 		exportLocusPop(pop2, r);
 	}
@@ -129,7 +129,7 @@ void newFreq(Locus* pop, Param* P, long gen, int lab, gsl_rng* r){
 				pop->cf = pop->sf;
 			}
 		}
-		
+
 		for(i = 0; i < P->subGenCF; i++){
 			pop->cf = freqAllele(pop->cf, cfPopSize, r);
 		}
@@ -144,7 +144,7 @@ void newFreq(Locus* pop, Param* P, long gen, int lab, gsl_rng* r){
 		for(i = 0; i < P->subGenTexas; i++){
 			pop->texas = freqAllele(pop->texas, texasPopSize, r);
 		}
-	
+
 		if(pop->next != NULL){
 			newFreq(pop->next, P, gen, lab, r);
 		}
@@ -152,7 +152,7 @@ void newFreq(Locus* pop, Param* P, long gen, int lab, gsl_rng* r){
 		cfPopSize = P->labCF_popsize;
 		sfPopSize = 0;
 		texasPopSize = P->labSF_popsize;
-		
+
 		pop->texas = freqAllele(pop->texas, texasPopSize, r);
 		pop->sf = freqAllele(pop->sf, sfPopSize, r);
 		pop->cf = freqAllele(pop->cf, cfPopSize, r);
@@ -161,68 +161,6 @@ void newFreq(Locus* pop, Param* P, long gen, int lab, gsl_rng* r){
 			newFreq(pop->next, P, gen, lab, r);
 		}
 	}
-}
-
-/**
- * \fn inline double freqAllele(double freq, long popSize)
- * \brief calculate new frequency based on generation n-1 frequency and pop size
- * \Param freq Frequency at generation n-1
- * \Param popSize Population size
- * \returns new frequency
-*/
-/*inline double freqAllele(double freq, long popSize, gsl_rng* r){
-	if(freq == 0 || freq == 1){
-		return freq;
-	}
-	
-	int nbZeros = 0;
-	int i;
-	
-	for(i = 0; i < 2*popSize; i++){
-		//double k = (double)random()/(double)RAND_MAX;
-		double k = gsl_rng_uniform(r);
-		nbZeros += (k<freq)?1:0;
-	}
-
-	return((double)nbZeros/(2*popSize));
-}*/
-
-inline double freqAllele(double freq, long popSize, gsl_rng* r){
-	return((double) gsl_ran_binomial(r, freq, 2*popSize)/(2*popSize));
-}
-
-
-/**
- * \fn inline void loadBar(int x, int n, int r, int w)
- * \brief Print and update the progress bar
- * \Param x step
- * \Param n total number of step
- * \Param r precision
- * \Param w width of the bar
- * \remark function shamefully stolen from http://www.rosshemsley.co.uk/2011/02/creating-a-progress-bar-in-c-or-any-other-console-app/
-*/
-inline void loadBar(int x, int n, int r, int w){
-    // Only update r times.
-    if ( x % (n/r) != 0 ) return;
- 
-    // Calculuate the ratio of complete-to-incomplete.
-    double ratio = x/(double)n;
-    int   c     = ratio * w;
- 
-    // Show the percentage complete.
-    printf("%3d%% [", (int)(ratio*100) );
- 
-    // Show the load bar.
-    int i;
-	for (i=0; i<c; i++)
-       printf("=");
- 
-    for (i=c; i<w; i++)
-       printf(" ");
- 
-    // ANSI Control codes to go back to the
-    // previous line and clear it.
-    printf("]\n\033[F\033[J");
 }
 
 /**
@@ -241,7 +179,7 @@ Locus* mutate(Locus* pop, Param* P, long gen){
 
 	for(i = 0; i < (P->mutaRate * 2*P->texas_popsize * P->subGenTexas); i++){
 		Locus* newLocus = calloc(1, sizeof(Locus));
-		if(newLocus == NULL){	
+		if(newLocus == NULL){
 			fprintf(stderr, "error on %s at line %d", __FILE__, __LINE__);
 			exit(0);
 		}
@@ -255,8 +193,8 @@ Locus* mutate(Locus* pop, Param* P, long gen){
 	if(gen >= P->init_gen){
 		for(i = 0; i < (P->mutaRate * 2*P->elabra_popsize * P->subGenSF); i++){
 			Locus* newLocus = calloc(1, sizeof(Locus));
-			
-			if(newLocus == NULL){	
+
+			if(newLocus == NULL){
 				fprintf(stderr, "error on %s at line %d", __FILE__, __LINE__);
 				exit(0);
 			}
@@ -268,14 +206,14 @@ Locus* mutate(Locus* pop, Param* P, long gen){
 			pop = newLocus;
 		}
 	}
-	
+
 	if(gen >= (P->init_gen + P->elabra_gen)){
 		// Mutation for CF ?
 		long cfPopSize = popSize(P, gen);
 		for(i = 0; i < (P->mutaRate * 2*cfPopSize * P->subGenCF); i++){
 			Locus* newLocus = calloc(1, sizeof(Locus));
-			
-			if(newLocus == NULL){	
+
+			if(newLocus == NULL){
 				fprintf(stderr, "error on %s at line %d", __FILE__, __LINE__);
 				exit(0);
 			}
@@ -285,10 +223,10 @@ Locus* mutate(Locus* pop, Param* P, long gen){
 			newLocus->next = pop;
 			P->nbLocus++;
 			pop = newLocus;
-		}	
+		}
 	}
-	
-	return pop;	
+
+	return pop;
 }
 
 /**
@@ -345,27 +283,27 @@ void migrate(Locus* pop, Param* P, int gen, gsl_rng* r){
 		//alea[i] = (double)rand() / RAND_MAX;
 		alea[i] = gsl_rng_uniform(r);
 	}
-	
+
 	int cfSize = popSize(P, gen);
-	
+
 	if(P->elabra_popsize == 0){ // Migration between Texas and Pachon only
 		int migTtoC = (int)floor(gaussrand(P->perc_poissonmigraTC*P->texas_popsize, 0, r));
 		int migCtoT = (int)floor(gaussrand(P->perc_poissonmigraCT*cfSize, 0, r));
 		migrateFreq(pop, cfSize, 0, 0, migTtoC, migCtoT, 0, 0, alea, P, gen);
 	}else{
-		int migTtoS = (int)floor(gaussrand(P->perc_poissonmigraTS*P->texas_popsize, 0, r));	
+		int migTtoS = (int)floor(gaussrand(P->perc_poissonmigraTS*P->texas_popsize, 0, r));
 		int migStoT = (int)floor(gaussrand(P->perc_poissonmigraST*P->elabra_popsize, 0, r));
-		int migStoC = (gen > (P->init_gen + P->elabra_gen)) ? (int)floor(gaussrand(P->perc_poissonmigraSC*P->elabra_popsize, 0, r)) : 0; //if no cf pop, no migration from and to CF	
+		int migStoC = (gen > (P->init_gen + P->elabra_gen)) ? (int)floor(gaussrand(P->perc_poissonmigraSC*P->elabra_popsize, 0, r)) : 0; //if no cf pop, no migration from and to CF
 		int migCtoS = (gen > (P->init_gen + P->elabra_gen)) ? (int)floor(gaussrand(P->perc_poissonmigraCS*cfSize, 0, r)) : 0;
 		migrateFreq(pop, cfSize, migTtoS, migStoT, 0, 0, migCtoS, migStoC, alea, P, gen);
 	}
 }
 
-void migrateFreq(Locus* pop, int cfPopSize, int migTtoS, int migStoT, int migTtoC, int migCtoT, int migCtoS, int migStoC, double* alea, Param* P, int gen){	
+void migrateFreq(Locus* pop, int cfPopSize, int migTtoS, int migStoT, int migTtoC, int migCtoT, int migCtoS, int migStoC, double* alea, Param* P, int gen){
 	if(P->elabra_popsize == 0){
 		double texasNewFreq = (double)((2 * migCtoT * pop->cf)+(2 * P->texas_popsize * pop->texas))/(2 * migCtoT + 2 * P->texas_popsize);
 		double cfNewFreq = (double)((2 * migTtoC * pop->texas)+(2 * cfPopSize * pop->cf))/(2 * migTtoC + 2 * cfPopSize);
-	
+
 		if(alea[0] < P->CTmr){
 			//printf("MIGRATION CT\n");
 			pop->texas = texasNewFreq;
@@ -394,7 +332,7 @@ void migrateFreq(Locus* pop, int cfPopSize, int migTtoS, int migStoT, int migTto
 			//printf("MIGRATION\n");
 			pop->sf = (double)((2 * P->elabra_popsize * pop->sf) + (2 * migCtoS * pop->cf)) / (2 * migCtoS + 2 * P->elabra_popsize);
 		}
-		
+
 		//Migration to texas
 		if(alea[3] < P->STmr){
 			//printf("MIGRATION ST\n");
@@ -406,7 +344,7 @@ void migrateFreq(Locus* pop, int cfPopSize, int migTtoS, int migStoT, int migTto
 			//printf("MIGRATION ST\n");
 			pop->cf = cfNewFreq;
 		}
-		
+
 		if(pop->next != NULL){
 			migrateFreq(pop->next, cfPopSize, migTtoS, migStoT, 0, 0, migCtoS, migStoC, alea, P, gen);
 		}
@@ -417,7 +355,7 @@ void migrateFreq(Locus* pop, int cfPopSize, int migTtoS, int migStoT, int migTto
 
 		if(alea < P->STmr){
 			nbFish = gaussrand
-		}	
+		}
 */
 
 
@@ -443,7 +381,7 @@ double gaussrand(int m, int sd){
 		X = V2 * sqrt(-2 * log(S) / S);
 
 	phase = 1 - phase;
-	
+
 	X *= sd;
 	X += m;
 
