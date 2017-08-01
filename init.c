@@ -29,7 +29,7 @@ Locus* initializeSimulation(Param* P, gsl_rng* r){
 			exit(0);
 		}
 		if(P->nbLocus == 0){
-			P->nbLocus = nbLocusInit(P->mutaRate, P->texas_popsize);
+			P->nbLocus = nbLocusInit(P->mutaRate, P->ancestral_popsize);
 		}
 		printf("%ld\n", P->nbLocus);
 		pop	= initPop(P, tableFrequence, P->nbLocus, r);
@@ -40,7 +40,7 @@ Locus* initializeSimulation(Param* P, gsl_rng* r){
 			exit(0);
 		}
 	}
-	
+
 	free(tableFrequence);
 
 	return(pop);
@@ -59,7 +59,7 @@ int nbLocusInit(float mutaRate, int popsize){
  * \brief Initialize population
  *
  * \param P parameters
- * \param freq 
+ * \param freq
  * \param nbLocus Number of locus to create
  * \returns Pointer to the first element of the linked list of locus
 */
@@ -70,17 +70,17 @@ Locus* initPop(Param* P, double* freq, long nbLocus, gsl_rng* r){
 		exit(0);
 	}
 
-	float freqLocus = freqInit(freq, P->texas_popsize, r);
+	float freqLocus = freqInit(freq, P->ancestral_popsize, r);
 
 	locus->cf = (P->elabra_gen == 0)?freqLocus:0;
 	locus->sf = freqLocus;
 	locus->texas = freqLocus;
 	locus->gene = 0;
-		
+
 	if(nbLocus > 1){
 		locus->next = initPop(P, freq, --nbLocus, r);
 	}
-	
+
 	return locus;
 }
 
@@ -93,7 +93,7 @@ Locus* initPop(Param* P, double* freq, long nbLocus, gsl_rng* r){
  * \return Initial frequency of the locus
 */
 inline double freqInit(double* table, long popSize, gsl_rng* r){
-	//printf("%.38f\n", (float)random()/RAND_MAX); 
+	//printf("%.38f\n", (float)random()/RAND_MAX);
 	//float f = (float)random()/RAND_MAX;
 	double f = gsl_rng_uniform(r);
 	int i;
@@ -113,22 +113,22 @@ inline double freqInit(double* table, long popSize, gsl_rng* r){
  * \returns distribution of DAF
 */
 double* freqTable(Param* P){
-	double* table = calloc((2*P->texas_popsize),sizeof(double));
+	double* table = calloc((2*P->ancestral_popsize),sizeof(double));
 	if(table == NULL){
 		fprintf(stderr, "Error at line %d of file %s\n", __LINE__, __FILE__);
 		exit(0);
 	}
 
 	table[0] = 0.;
-	
-	double nbWatterson = watterson(P->texas_popsize);
-	
+
+	double nbWatterson = watterson(P->ancestral_popsize);
+
 	long i;
-	for(i = 1; i < 2*P->texas_popsize; i++){
+	for(i = 1; i < 2*P->ancestral_popsize; i++){
 		double freqSite = (double) 1/(i*nbWatterson);
 		table[i] = table[(i-1)] + freqSite;
 	}
-	
+
 	return table;
 }
 
@@ -142,12 +142,11 @@ double* freqTable(Param* P){
 double watterson(long popSize){
 	double nb = 0;
 	int i;
-	
+
 	for(i = 1; i < 2*popSize; i++){
 		nb += (double) 1/i;
-	
-	}	
-	
+
+	}
+
 	return nb;
 }
-

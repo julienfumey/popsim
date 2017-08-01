@@ -47,6 +47,7 @@ struct Param{
 	int init_gen; /**< Number of initial generations (1 pop that accumulates mutations) */
 	int elabra_gen; /**< Number of generation of generations before separation between CF and El Abra SF */
 	int bn_gen; /**< Number of generation of bottleneck (CF) */
+	int ancestral_popsize; /**< Size of the ancestral population */
 	int texas_popsize; /**< Size of Texas population */
 	int elabra_popsize; /**< Size of Sierra de El Abra population */
 	int bn_popsize; /**< Size of CF population during bottleneck */
@@ -59,12 +60,12 @@ struct Param{
 	double TCmr; /**< Migration rate from SF (Texas) to CF */
 	double CTmr; /**< Migration rate from CF to SF (Texas) */
 	double migra;
-	double perc_poissonmigraTC; /**< Percentage of migrant fishes */
-	double perc_poissonmigraCT;
-	double perc_poissonmigraST;
-	double perc_poissonmigraTS;
-	double perc_poissonmigraCS;
-	double perc_poissonmigraSC;
+	double perc_poissonmigraTC; /**< Percentage of migrant fishes from Texas to cave */
+	double perc_poissonmigraCT; /**< Percentage of migrant fishes from cave to Texas */
+	double perc_poissonmigraST; /**< Percentage of migrant fishes from El Abra to Texas */
+	double perc_poissonmigraTS; /**< Percentage of migrant fishes from Texas to El Abra */
+	double perc_poissonmigraCS; /**< Percentage of migrant fishes from cave to El Abra */
+	double perc_poissonmigraSC; /**< Percentage of migrant fishes from El Abra to cave */
 	char* filename; /**< output filename */
 	int generatePopInit; /**< Generate a initial population of DAF ? (1 = yes, 0 = no) */
 	int labCF_gen; /**< Number of generations in lab for CF */
@@ -78,7 +79,7 @@ struct Param{
 	int subGenTexas;
 	int subGenSF;
 	int subGenCF;
-	
+
 };
 
 /**
@@ -100,7 +101,7 @@ struct Snp{
 	int polySF;
 	int polyTexas;
 	int fixedInitCF;
-	int fixedNeoCF;	
+	int fixedNeoCF;
 	int fixedInitSF;
 	int fixedNeoSF;
 	double corr; /**<Correlation coefficient for shared SNP between CF and SF */

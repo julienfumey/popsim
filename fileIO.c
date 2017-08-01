@@ -45,7 +45,7 @@ void exportPop(Locus* pop, FILE* f){
 */
 Param *parseParametersFile(char* fileName){
 	FILE* fichier = fopen(fileName, "r");
-	
+
 	if(fichier == NULL){
 		fprintf(stderr, "Unable to open parameters file\n");
 		exit(1);
@@ -53,7 +53,7 @@ Param *parseParametersFile(char* fileName){
 	Param *parametres = calloc(1, sizeof(Param));
 	char line[2000];
 	char param[1000], value[1000];
-	
+
 	while(fgets(line, sizeof(line), fichier) != NULL){
 		if(!strchr("#\n", line[0])){
 			sscanf(line, "%s = %s", param, value);
@@ -67,6 +67,8 @@ Param *parseParametersFile(char* fileName){
 				parametres->elabra_gen = strtol(value, NULL, 10);
 			}else if(strcmp(param, "bn_gen") == 0){
 				parametres->bn_gen = strtol(value, NULL, 10);
+			}else if(strcmp(param, "ancestral_popsize") == 0){
+				parametres->ancestral_popsize = strtol(value, NULL, 10);
 			}else if(strcmp(param, "texas_popsize") == 0){
 				parametres->texas_popsize = strtol(value, NULL, 10);
 			}else if(strcmp(param, "elabra_popsize") == 0){
@@ -131,11 +133,11 @@ Param *parseParametersFile(char* fileName){
 				parametres->subGenTexas = strtol(value, NULL, 10);
 			}else{
 				printf("Parameter %s does not exist\n", param);
-			}			
+			}
 		}
-	}	
+	}
 	fclose(fichier);
-	return parametres;	
+	return parametres;
 }
 
 /**
@@ -165,7 +167,7 @@ void exportStats(FILE* f, long i, Locus* pop, Param* P, gsl_rng* r){
 		fprintf(stderr, "Error at line %d of file %s\n", __LINE__, __FILE__);
 		exit(0);
 	}
-	
+
 	statsPop(pop, stats);
 	statsPop2(pop, stats2);
 	scoreSimu(stats, score);
@@ -190,7 +192,7 @@ void exportStats(FILE* f, long i, Locus* pop, Param* P, gsl_rng* r){
  * \brief Counts SNPs by SNPs categories
  * \Param pop locus linked list
  * \Param stats data structure where results are saved
- * High (>.95) and low (< .05) frequency alleles 
+ * High (>.95) and low (< .05) frequency alleles
  * are considered as fixed
 */
 void statsPop(Locus* pop, Snp* stats){
@@ -208,7 +210,7 @@ void statsPop(Locus* pop, Snp* stats){
 		if(pop->texas >= 0.05 && pop->texas <= 0.95){
 			stats->snp++;
 			stats->shared++;
-			
+
 			stats->x += pop->cf;
 			stats->y += pop->texas;
 			stats->xy += (pop->cf * pop->texas);
@@ -221,7 +223,7 @@ void statsPop(Locus* pop, Snp* stats){
 			stats->snp++;
 			stats->derivedFixedSF++;
 		}
-	}else if(pop->texas >= 0.05 && pop->texas <= 0.95){ 
+	}else if(pop->texas >= 0.05 && pop->texas <= 0.95){
 		if(pop->cf < 0.05){
 			stats->snp++;
 			stats->ancestralFixedCF++;
@@ -233,7 +235,7 @@ void statsPop(Locus* pop, Snp* stats){
 
 	if(pop->next != NULL){
 		statsPop(pop->next, stats);
-	}	
+	}
 }
 
 /**
@@ -241,7 +243,7 @@ void statsPop(Locus* pop, Snp* stats){
  * \brief Counts SNPs by SNPs categories
  * \Param pop locus linked list
  * \Param stats data structure where results are saved
- * High (>.95) and low (< .05) frequency alleles 
+ * High (>.95) and low (< .05) frequency alleles
  * are NOT considered as fixed contrary to function statsPop
 */
 
@@ -260,7 +262,7 @@ void statsPop2(Locus* pop, Snp* stats){
 		if(pop->texas > 0 && pop->texas < 1){
 			stats->snp++;
 			stats->shared++;
-			
+
 			stats->x += pop->cf;
 			stats->y += pop->texas;
 			//printf("%f ", pop->texas);
@@ -275,7 +277,7 @@ void statsPop2(Locus* pop, Snp* stats){
 			stats->snp++;
 			stats->derivedFixedSF++;
 		}
-	}else if(pop->texas > 0 && pop->texas < 1){ 
+	}else if(pop->texas > 0 && pop->texas < 1){
 		if(pop->cf == 0){
 			stats->snp++;
 			stats->ancestralFixedCF++;
@@ -324,10 +326,10 @@ void nbSitePolyByPop(Locus* pop, Snp* stats){
 			stats->fixedNeoCF++;
 		}
 	}
-	
+
 	if(pop->next != NULL){
 		nbSitePolyByPop(pop->next, stats);
-	}	
+	}
 }
 
 /**
@@ -338,7 +340,7 @@ void nbSitePolyByPop(Locus* pop, Snp* stats){
 */
 double calculScore(Snp* stats, int fixedCF, int fixedSF, int shared, int derivedFixedCF, int derivedFixedSF, int ancestralFixedCF, int ancestralFixedSF){
 	double score = 0;
-	
+
 	score += (double)pow((fixedCF - ceil(((double)stats->fixedCF / (double)stats->snp) * 100)),2) / (double)fixedCF;
 	score += (double)pow((fixedSF - ceil(((double)stats->fixedSF/(double)stats->snp)*100)),2) / (double)fixedSF;
 	score += (double)pow((shared - ceil(((double)stats->shared/(double)stats->snp)*100)),2) / (double)shared;
@@ -409,7 +411,7 @@ void calcCorr(Snp* stats){
 void exportLocusPop(Locus* pop, gsl_rng* r){
 	FILE* out = fopen("statsLocus.txt", "w");
 	fprintf(out, "\"%%der CF\", \"%%der SF\", \"CF1 all 1\", \"CF1 all 2\", \"CF2 all 1\", \"CF2 all 2\", \"SF1 all 1\", \"SF1 all 2\", \"SF2 all 1\", \"SF2 all 2\"\n");
-	
+
 	printFileExportLocus(out, pop, r);
 	fclose(out);
 }
