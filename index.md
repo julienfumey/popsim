@@ -5,6 +5,8 @@ Popsim is a Wright-Fisher population genetics simulator.
 
 It was first designed to study *Astyanax mexicanus* cavefish evolution (see How to cite PopSim section).
 
+![](modele_simu_full.png)
+
 ### How to install PopSim
 You need to have the GNU Scientific Library (GSL) installed on your computer to use PopSim.
 
