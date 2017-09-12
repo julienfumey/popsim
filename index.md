@@ -1,9 +1,15 @@
 ### Welcome to PopSim.
 
+### What is PopSim?
+Popsim is a Wright-Fisher population genetics simulator.
+
+It was first designed to study *Astyanax mexicanus* cavefish evolution (see How to cite PopSim section).
+
 ### How to install PopSim
 You need to have the GNU Scientific Library (GSL) installed on your computer to use PopSim.
 
 To install PopSim, just compile it:
+
 `gcc *.c -o PopSim -lgsl -lgcblas -lm`
 
 ### How to launch PopSim
@@ -51,4 +57,11 @@ ie. param = value
 * **subGenSF**: Number of subgenerations in "El Abra" population
 * **subGenCF**: Number of subgenerations in "CF" population
 * **subGenTexas**: Number of subgenerations in "Texas" population
+
+# How to cite PopSim?
+If you use PopSim, please cite this paper :
+
+Evidence of Late Pleistocene origin of Astyanax mexicanus cavefish
+Julien Fumey, Hélène Hinaux, Céline Noirot, Sylvie Rétaux, Didier Casane
+bioRxiv 094748; doi: https://doi.org/10.1101/094748
 
